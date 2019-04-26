@@ -1,0 +1,15 @@
+{!REQUIRESCRIPT("/soap/ajax/30.0/connection.js")} 
+
+
+var leadObj = new sforce.SObject("Lead"); 
+leadObj.Id = '{!Lead.Id}'; 
+leadObj.status = 'Contacted'; 
+
+var result = sforce.connection.update([leadObj]); 
+
+if (result[0].success =='false') { 
+alert (result[0].errors.message); 
+} else { 
+//window.opener.location.href = "/{!Lead.Id}"; 
+window.location.reload(); 
+}

@@ -1,0 +1,49 @@
+public class OpportunitySearchController {
+
+    //added an instance varaible for the standard controller
+    private ApexPages.StandardController controller {get; set;}
+    // the actual account
+    private Account a;
+	// the results from the search. do not init the results or a blank rows show up initially on page load
+    public List<opportunity> searchResults {get;set;}
+
+	// the text in the search box
+    public string searchText {
+    	get {
+    		if (searchText == null) searchText = 'Acme'; // prefill the serach box for ease of use
+    		return searchText;
+    	}
+    	set;
+	}
+
+    public OpportunitySearchController(ApexPages.StandardController controller) {
+
+        //initialize the stanrdard controller
+        this.controller = controller;
+        this.a = (Account)controller.getRecord();
+
+    }
+
+	// fired when the search button is clicked
+	public PageReference search() {
+		if (searchResults == null) {
+			searchResults = new List<opportunity>(); // init the list if it is null
+		} else {
+			searchResults.clear(); // clear out the current results if they exist
+		}
+		// Note: you could have achieved the same results as above by just using:
+		// searchResults = new List<categoryWrapper>();
+
+		// use some dynamic soql to find the related opportunities by name
+		
+		String acctId = a.Id;
+		//String qry = 'Select o.Id, o.Name, o.CloseDate, o.Amount from Opportunity o Where AccountId = '
+        //     +a.Id ; 
+        //string searchquery='select Name,id from account where name like \'%'+searchKey+'%\' Limit 10';
+       String searchquery='select Name,id,StageName,CloseDate,Amount from Opportunity where  name like \'%'+searchText+'%\' and AccountId = :acctId ';
+       System.debug('search query obtained '+searchquery);     
+		searchResults = Database.query(searchquery);
+		return null;
+	}
+
+}
